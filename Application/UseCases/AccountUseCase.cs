@@ -1,6 +1,7 @@
 using AppInterface = Application.Interfaces;
 using Bank.Domain.Entities;
 using Application.Dtos;
+using Bank.Domain.ValueObjects;
 
 namespace Bank.Application.UseCases
 {
@@ -27,7 +28,7 @@ namespace Bank.Application.UseCases
         public AccountResponse Deposit(Guid id, TransactionRequest request)
         {
             var account = _repository.GetById(id);
-            account.Deposit(request.Amount);
+            account.Deposit(Money.Create(request.Amount, account.Balance.Currency));
             _repository.Save(account);
             return Map(account);
         }
@@ -36,7 +37,7 @@ namespace Bank.Application.UseCases
         public AccountResponse Withdraw(Guid id, TransactionRequest request)
         {
             var account = _repository.GetById(id);
-            account.Withdraw(request.Amount);
+            account.Withdraw(Money.Create(request.Amount, account.Balance.Currency));
             _repository.Save(account);
             return Map(account);
         }
@@ -48,7 +49,7 @@ namespace Bank.Application.UseCases
             {
                 Id = account.Id,
                 Owner = account.Owner,
-                Balance = account.Balance,
+                Balance = account.Balance.Amount,
                 History = account.History,
             };
         }

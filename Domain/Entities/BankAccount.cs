@@ -1,39 +1,36 @@
+using Bank.Domain.ValueObjects;
 namespace Bank.Domain.Entities
 {
     public class BankAccount
     {
         public Guid Id { get; private set; } = Guid.NewGuid();
         public string Owner { get; private set; } = string.Empty;
-        public decimal Balance { get; private set;}
+        public Money Balance { get; private set;}
 
         public List<string> History { get; private set; } = [];
 
         public BankAccount(string owner)
         {
             Owner = owner;
-            Balance = 0;
+            Balance = Money.Zero("EUR");
             History.Add($"Account created for {owner}");
         }
 
-        public void Deposit(decimal amount)
+        public void Deposit(Money amount)
         {
-            if (amount <= 0){
-                throw new ArgumentException("Amount must be greater than 0");
-            }
-            Balance += amount;
-            History.Add($"Deposited {amount} on {DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")}");
+            Balance = Balance.Add(amount);
+            History.Add($"Deposited {amount.Amount} {amount.Currency} on {DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")}");
         }
-
-        public void Withdraw(decimal amount)
+        
+        // Withdraw money from the account
+        public void Withdraw(Money amount)
         {
-            if (amount <= 0){
-                throw new ArgumentException("Amount must be greater than 0");
-            }
-            if (amount > Balance){
+            if(Balance.Amount < amount.Amount)
+            {
                 throw new ArgumentException("Insufficient funds");
             }
-            Balance -= amount;
-            History.Add($"Withdrawn {amount} on {DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")}");
+            Balance = Balance.Subtract(amount);
+            History.Add($"Withdrawn {amount.Amount} {amount.Currency} on {DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")}");
         }
 
     }
