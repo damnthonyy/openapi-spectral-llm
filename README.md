@@ -14,31 +14,31 @@
 * **AI-Powered Auto-Fix:** Automatically suggest or apply fixes to your `openapi.yaml` based on Spectral violations.
 * **Model Agnostic:** Configurable to work with OpenAI (GPT-4), Anthropic (Claude), or local models via Ollama.
 
-## Prérequis
+## Prerequisites
 
 - .NET 10.0 SDK
 
 ## Installation
 
-### Exécution
+### Running the Project
 ```
 dotnet run
 ```
 
-L'API sera accessible sur `https://localhost:5220`.
-Interface Swagger UI `http://localhost:5220/swagger`.
-Spec OpenApi (JSON) `http://localhost:5220/swagger/v1/swagger.json` ( or .yaml)
+The API will be accessible at `https://localhost:5220`.
+Swagger UI interface: `http://localhost:5220/swagger`.
+OpenAPI specification (JSON): `http://localhost:5220/swagger/v1/swagger.json` (or .yaml).
 
 ## Endpoints
 
-- `POST /api/accounts/create` - Créer un compte
-- `GET /api/accounts/{id}` - Obtenir un compte
-- `POST /api/accounts/{id}/deposit` - Déposer de l'argent
-- `POST /api/accounts/{id}/withdraw` - Retirer de l'argent
+- `POST /api/accounts/create` - Create an account
+- `GET /api/accounts/{id}` - Get account details
+- `POST /api/accounts/{id}/deposit` - Deposit funds
+- `POST /api/accounts/{id}/withdraw` - Withdraw funds
 
-## Documentation API
+## API Documentation
 
-En mode développement, la documentation OpenAPI est disponible via `/openapi/v1.json`.
+In development mode, the OpenAPI documentation is available at `/openapi/v1.json`.
 
 
 
