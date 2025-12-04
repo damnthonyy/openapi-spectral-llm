@@ -9,7 +9,7 @@ on:
     - '**.csproj'
 
 env:
-  DOTNET_VERSION: '6.0.401' # The .NET SDK version to use
+  DOTNET_VERSION: '10.0' # The .NET SDK version to use
 
 jobs:
   build-and-test:
@@ -32,6 +32,32 @@ jobs:
       
     - name: Build
       run: dotnet build --configuration Release --no-restore
-    
+
+    - name: Generate OpenAPI documentation
+      run: dotnet run --project scripts/OpenApiGenerator/OpenApiGenerator.csproj
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '22'
+
+    - name: Install Spectral
+      run: npm install -g @stoplight/spectral-cli
+
+    - name: Create reports directory
+      run: mkdir -p reports
+
+    - name: Validate OpenAPI with Spectral
+      run: |
+        spectral lint scripts/openapi.json --format json --output reports/spectral-report.json || true
+        spectral lint scripts/openapi.json --format stylish --output reports/spectral-report.txt || true
+
+    - name: Upload Spectral report
+      uses: actions/upload-artifact@v4
+      with:
+        name: spectral-report-${{ matrix.os }}
+        path: reports/
+        if-no-files-found: warn
+
     - name: Test
       run: dotnet test --no-restore --verbosity normal

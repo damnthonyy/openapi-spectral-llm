@@ -17,11 +17,17 @@
 ## Prerequisites
 
 - .NET 10.0 SDK
+- Node.js et npm (pour Spectral - optionnel en local)
 
 ## Installation
 
-### Running the Project
+```bash
+dotnet restore
 ```
+
+## Exécution
+
+```bash
 dotnet run
 ```
 
@@ -31,14 +37,80 @@ OpenAPI specification (JSON): `http://localhost:5220/swagger/v1/swagger.json` (o
 
 ## Endpoints
 
-- `POST /api/accounts/create` - Create an account
-- `GET /api/accounts/{id}` - Get account details
-- `POST /api/accounts/{id}/deposit` - Deposit funds
-- `POST /api/accounts/{id}/withdraw` - Withdraw funds
+- `POST /api/accounts/create` - Créer un compte bancaire
+- `GET /api/accounts/{id}` - Obtenir les détails d'un compte
+- `POST /api/accounts/{id}/deposit` - Déposer de l'argent
+- `POST /api/accounts/{id}/withdraw` - Retirer de l'argent
 
-## API Documentation
+## Génération de la documentation OpenAPI
 
-In development mode, the OpenAPI documentation is available at `/openapi/v1.json`.
+Pour générer le fichier OpenAPI :
 
+```bash
+dotnet run --project scripts/OpenApiGenerator/OpenApiGenerator.csproj
+```
 
+Le fichier `openapi.json` sera généré dans le dossier `scripts/`.
 
+## Validation avec Spectral
+
+### Installation locale (optionnel)
+
+```bash
+npm install -g @stoplight/spectral-cli
+```
+
+### Validation
+
+```bash
+spectral lint scripts/openapi.json
+```
+
+### Configuration
+
+Les règles Spectral sont définies dans `.spectral.yml`. Le fichier étend les règles OpenAPI par défaut et ajoute des règles personnalisées pour :
+- Vérifier la présence de descriptions sur les opérations
+- Valider les codes de réponse
+- Exiger des tags et operationId
+- Vérifier la qualité des schémas
+
+## Structure du projet
+
+```
+Bank/
+├── Application/          # Couche Application
+│   ├── Dtos/            # Data Transfer Objects
+│   ├── Interfaces/      # Interfaces de dépôts
+│   └── UseCases/        # Cas d'usage métier
+├── Domain/              # Couche Domain
+│   ├── Entities/        # Entités métier
+│   └── ValueObjects/   # Value Objects (Money, etc.)
+├── Infrastructure/      # Couche Infrastructure
+│   └── Repositories/    # Implémentations des dépôts
+├── Controllers/         # Contrôleurs API
+└── scripts/
+    └── OpenApiGenerator/ # Générateur OpenAPI
+```
+
+## CI/CD
+
+Le projet inclut un workflow GitHub Actions qui :
+- Build le projet
+- Génère la documentation OpenAPI
+- Valide avec Spectral
+- Upload les rapports de validation comme artefacts
+- Exécute les tests
+
+## Technologies
+
+- **.NET 10.0** : Framework principal
+- **Swashbuckle.AspNetCore** : Génération OpenAPI et Swagger UI
+- **Spectral** : Validation de la spécification OpenAPI
+- **Clean Architecture** : Architecture en couches
+- **DDD** : Domain-Driven Design avec Value Objects
+
+## Documentation
+
+- [Documentation Swashbuckle](https://github.com/domaindrivendev/Swashbuckle.AspNetCore)
+- [Documentation Spectral](https://meta.stoplight.io/docs/spectral/docs/getting-started/introduction.md)
+- [OpenAPI Specification](https://swagger.io/specification/)

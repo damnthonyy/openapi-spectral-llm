@@ -1,0 +1,106 @@
+extends: ["spectral:oas"]
+functions:
+  pathParamsDefined: "./scripts/spectral/pathParamsDefined.js"
+
+rules:
+  # Exiger une description pour chaque opération
+  operation-description:
+    description: "Chaque opération doit avoir une description"
+    severity: error
+    given: "$.paths[*][*]"
+    then:
+      field: description
+      function: truthy
+
+  # Exiger des réponses avec description
+  operation-response-description:
+    description: "Chaque réponse doit avoir une description"
+    severity: error
+    given: "$.paths[*][*].responses[*]"
+    then:
+      field: description
+      function: truthy
+
+  # Exiger des tags pour chaque opération
+  operation-tags:
+    description: "Chaque opération doit avoir au moins un tag"
+    severity: warn
+    given: "$.paths[*][*]"
+    then:
+      field: tags
+      function: truthy
+
+  # Vérifier que les tags sont un tableau de strings
+  operation-tags-array:
+    description: "Les tags doivent être un tableau de strings"
+    severity: error
+    given: "$.paths[*][*].tags"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          type: array
+          items:
+            type: string
+
+  # Exiger des exemples dans les schémas
+  schema-examples:
+    description: "Les schémas de requête/réponse devraient avoir des exemples"
+    severity: warn
+    given: "$.paths[*][*].requestBody.content[*].schema"
+    then:
+      field: example
+      function: truthy
+
+  # Exiger des descriptions dans les schémas
+  schema-description:
+    description: "Les schémas doivent avoir une description"
+    severity: warn
+    given: "$.components.schemas[*]"
+    then:
+      field: description
+      function: truthy
+
+  # Exiger au moins un serveur
+  no-empty-servers:
+    description: "L'API doit définir au moins un serveur"
+    severity: error
+    given: "$"
+    then:
+      field: servers
+      function: truthy
+
+  # Vérifier que les paramètres de chemin sont définis
+  path-params-defined:
+    description: "Les paramètres de chemin doivent être définis dans parameters"
+    severity: warn
+    given: "$.paths[*]"
+    then:
+      function: pathParamsDefined
+
+  # Exiger operationId pour chaque opération
+  operation-operationId:
+    description: "Chaque opération doit avoir un operationId unique"
+    severity: error
+    given: "$.paths[*][*]"
+    then:
+      field: operationId
+      function: truthy
+
+  # Exiger au moins une réponse 2xx
+  operation-success-response:
+    description: "Les opérations doivent avoir au moins une réponse 2xx"
+    severity: error
+    given: "$.paths[*][*].responses"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          type: object
+          patternProperties:
+            "^2[0-9]{2}$":
+              type: object
+          not:
+            propertyNames:
+              pattern: "^(?!2[0-9]{2}$).*"
+          minProperties: 1
