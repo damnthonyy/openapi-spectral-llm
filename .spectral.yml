@@ -100,4 +100,7 @@ rules:
           patternProperties:
             "^2[0-9]{2}$":
               type: object
+          not:
+            propertyNames:
+              pattern: "^(?!2[0-9]{2}$).*"
           minProperties: 1
