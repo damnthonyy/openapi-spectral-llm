@@ -45,7 +45,7 @@ jobs:
       run: npm install -g @stoplight/spectral-cli
 
     - name: Create reports directory
-      run: mkdir -p reports
+      run: node -e "require('fs').mkdirSync('reports', { recursive: true })"
 
     - name: Validate OpenAPI with Spectral
       run: |
