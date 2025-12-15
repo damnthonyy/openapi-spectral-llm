@@ -53,7 +53,7 @@ jobs:
         spectral lint scripts/openapi.json --format stylish --output reports/spectral-report.txt || true
 
     - name: Upload Spectral report
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: spectral-report-${{ matrix.os }}
         path: reports/
